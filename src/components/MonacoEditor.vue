@@ -7,35 +7,63 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import * as monaco from "monaco-editor";
 
 const code = `
-function foo() {
-  return 'foo'
-}
+import React, Component from 'react';
+import render from 'react-dom';
+import Hello from './hello';
+import './style.css';
+
+  render() {
+    return (
+      <div>
+        <Hello name={this.state.name} />
+        <p>
+          Start editing to see some magic happen :)
+        </p>
+      </div>
+    );
+  }
 `.trim();
 // TODO: Fix
 let editor: monaco.editor.IStandaloneCodeEditor;
+monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+  noSemanticValidation: true,
+  noSyntaxValidation: true
+});
+monaco.editor.defineTheme("main", {
+  base: "vs",
+  inherit: true,
+  rules: [],
+  colors: {
+    "editor.background": "#ececec"
+  }
+});
 
 @Component({
   components: {},
-  data: function() {
-    return {
-      code,
-      language: "javascript",
-      theme: "vs",
-      options: {
-        lineNumbers: true
-      }
-    };
+  props: ["width"],
+  watch: {
+    width: function() {
+      console.log("update");
+      editor.layout();
+    }
   },
   mounted: function() {
+    console.log(this.$props.width);
     editor = monaco.editor.create(this.$refs.monacoEditor as HTMLElement, {
-      value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
-        "\n"
-      ),
-      language: "typescript"
+      value: code,
+      language: "typescript",
+      minimap: {
+        enabled: false
+      },
+      automaticLayout: true,
+      theme: "main"
     });
   },
   destroyed: function() {
     editor.getModel()?.dispose();
+  },
+  updated: function() {
+    console.log("hej");
   }
 })
 export default class MonacoEditor extends Vue {}
@@ -47,6 +75,6 @@ body {
 }
 
 .monaco-editor {
-  height: 500px;
+  height: 100%;
 }
 </style>
