@@ -2,15 +2,17 @@
   <div class="layout">
     <div ref="navigation" class="navigation">
       <div class="button-container">
-        <button v-on:click="showEditor = !showEditor">Editor</button>
-        <button v-on:click="showTutorial = !showTutorial">Tutorial</button>
+        <button @click="toggleEditor">Editor</button>
+        <button @click="toggleTutorial">Tutorial</button>
       </div>
     </div>
     <div ref="windowContainer" class="window-container">
       <div v-show="showEditor" class="editor" ref="editor">
-        <MonacoEditor v-bind:width="editorWidth" v-bind:height="editorHeight" />
+        <CloseButton :onClose="toggleEditor" />
+        <MonacoEditor :width="editorWidth" :height="editorHeight" />
       </div>
       <div v-show="showTutorial" class="tutorial" ref="tutorial">
+        <CloseButton :onClose="toggleTutorial" />
         <Tutorial />
       </div>
     </div>
@@ -22,6 +24,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Split from "split.js";
 import MonacoEditor from "./MonacoEditor.vue";
 import Tutorial from "./Tutorial.vue";
+import CloseButton from "./CloseButton.vue";
 
 let verticalSplit: Split.Instance;
 let windowSplit: Split.Instance;
@@ -37,7 +40,6 @@ const initializeWindowSplit = (
     sizes: [60, 40],
     snapOffset: 0,
     gutterStyle: (a, b) => ({
-      zIndex: "1",
       background: "#d9d9da",
       [a]: `${b}px`
     }),
@@ -48,7 +50,8 @@ const initializeWindowSplit = (
 @Component({
   components: {
     MonacoEditor,
-    Tutorial
+    Tutorial,
+    CloseButton
   },
   data: function() {
     return {
@@ -94,6 +97,14 @@ const initializeWindowSplit = (
       }
 
       setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
+    }
+  },
+  methods: {
+    toggleEditor: function() {
+      this.$data.showEditor = !this.$data.showEditor;
+    },
+    toggleTutorial: function() {
+      this.$data.showTutorial = !this.$data.showTutorial;
     }
   },
   mounted: function() {
@@ -156,6 +167,7 @@ export default class Layout extends Vue {}
   display: flex;
 
   .editor {
+    position: relative;
     background: #ececec;
     width: 100%;
   }
