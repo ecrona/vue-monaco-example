@@ -10,7 +10,9 @@
       <div v-show="showEditor" class="editor" ref="editor">
         <MonacoEditor v-bind:width="editorWidth" v-bind:height="editorHeight" />
       </div>
-      <div v-show="showTutorial" class="tutorial" ref="tutorial">tutorial</div>
+      <div v-show="showTutorial" class="tutorial" ref="tutorial">
+        <Tutorial />
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +21,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Split from "split.js";
 import MonacoEditor from "./MonacoEditor.vue";
+import Tutorial from "./Tutorial.vue";
 
 let verticalSplit: Split.Instance;
 let windowSplit: Split.Instance;
@@ -31,15 +34,21 @@ const initializeWindowSplit = (
   windowSplit = Split([editor, tutorial], {
     direction: "horizontal",
     minSize: 200,
-    sizes: [75, 25],
+    sizes: [60, 40],
     snapOffset: 0,
+    gutterStyle: (a, b) => ({
+      zIndex: "1",
+      background: "#d9d9da",
+      [a]: `${b}px`
+    }),
     onDrag
   });
 };
 
 @Component({
   components: {
-    MonacoEditor
+    MonacoEditor,
+    Tutorial
   },
   data: function() {
     return {
@@ -91,6 +100,10 @@ const initializeWindowSplit = (
       sizes: [5, 95],
       gutterSize: 10,
       snapOffset: 0,
+      gutterStyle: (a, b) => ({
+        background: "#afb0b0",
+        [a]: `${b}px`
+      }),
       onDrag: () => {
         this.$data.editorHeight = editor.clientHeight;
       }
@@ -111,11 +124,12 @@ export default class Layout extends Vue {}
 <style scoped lang="less">
 .layout {
   height: 600px;
-  width: 800px;
+  width: 1200px;
 }
 
 .navigation {
-  padding: 8px 8px;
+  padding: 10px 10px;
+  padding-bottom: 0;
   background: #afb0b0;
 
   .button-container {
@@ -130,20 +144,20 @@ export default class Layout extends Vue {}
 }
 
 .window-container {
+  position: relative;
   display: flex;
 
   .editor {
     background: #ececec;
     width: 100%;
-    //padding-right: 5px;
-    //margin-right: -5px;
   }
 
   .tutorial {
-    background: #d9d9da;
+    position: relative;
     width: 100%;
-    //padding-left: 5px;
-    //margin-left: -5px;
+    background: #d9d9da;
+    padding: 10px;
+    padding-left: 0;
   }
 }
 </style>
