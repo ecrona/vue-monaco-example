@@ -12,7 +12,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
     onClose: { type: Function }
   }
 })
-export default class MonacoEditor extends Vue {}
+export default class CloseButton extends Vue {}
 </script>
 
 <style scoped lang="less">

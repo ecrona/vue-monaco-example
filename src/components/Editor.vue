@@ -11,7 +11,7 @@ import { editorSnippet } from "../constants/Snippets";
 @Component({
   props: ["width"]
 })
-export default class MonacoEditor extends Vue {
+export default class Editor extends Vue {
   private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
   @Watch("width")
@@ -28,6 +28,10 @@ export default class MonacoEditor extends Vue {
         target?.position?.column ?? 0
       ]);
     }
+  }
+
+  private dragover(e: DragEvent) {
+    e.preventDefault()
   }
 
   public mounted() {
@@ -56,10 +60,14 @@ export default class MonacoEditor extends Vue {
     });
 
     monacoEditor.addEventListener("drop", this.drop);
-    monacoEditor.addEventListener("dragover", e => e.preventDefault());
+    monacoEditor.addEventListener("dragover", this.dragover);
   }
 
   public destroyed() {
+    const monacoEditor = this.$refs.monacoEditor as HTMLElement;
+
+    monacoEditor.removeEventListener('drop', this.drop);
+    monacoEditor.removeEventListener('dragover', this.dragover);
     this.editor?.getModel()?.dispose();
   }
 }

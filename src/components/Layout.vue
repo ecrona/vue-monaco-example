@@ -9,7 +9,7 @@
     <div ref="windowContainer" class="window-container">
       <div v-show="showEditor" class="editor" ref="editor">
         <CloseButton :onClose="toggleEditor" />
-        <MonacoEditor :width="editorWidth" :height="editorHeight" />
+        <Editor :width="editorWidth" :height="editorHeight" />
       </div>
       <div v-show="showTutorial" class="tutorial" ref="tutorial">
         <CloseButton :onClose="toggleTutorial" />
@@ -23,13 +23,13 @@
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Split from "split.js";
 import { throttle, debounce } from "throttle-debounce";
-import MonacoEditor from "./MonacoEditor.vue";
+import Editor from "./Editor.vue";
 import Tutorial from "./Tutorial.vue";
 import CloseButton from "./CloseButton.vue";
 
 @Component({
   components: {
-    MonacoEditor,
+    Editor,
     Tutorial,
     CloseButton
   }
