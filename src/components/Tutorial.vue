@@ -15,36 +15,25 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import * as monaco from "monaco-editor";
+import { tutorialSnippet } from "../constants/Snippets";
 
-const code = `
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: 'React'
-    };
-  }
-`.trim();
-
-@Component({
-  components: {},
-  data: function() {
+@Component({})
+export default class MonacoEditor extends Vue {
+  public data() {
     return {
-      code,
-      lineNumbers: code.split("\n").map((line, index) => index + 1)
+      code: tutorialSnippet,
+      lineNumbers: tutorialSnippet.split("\n").map((line, index) => index + 1)
     };
-  },
-  methods: {
-    selectAll: function(e) {
-      const selection = window.getSelection() as Selection;
-      const range = document.createRange();
-      range.selectNodeContents(this.$refs.code as HTMLElement);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
   }
-})
-export default class MonacoEditor extends Vue {}
+
+  public selectAll() {
+    const selection = window.getSelection() as Selection;
+    const range = document.createRange();
+    range.selectNodeContents(this.$refs.code as HTMLElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+}
 </script>
 
 <style scoped lang="less">

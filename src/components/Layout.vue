@@ -20,100 +20,89 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Split from "split.js";
 import MonacoEditor from "./MonacoEditor.vue";
 import Tutorial from "./Tutorial.vue";
 import CloseButton from "./CloseButton.vue";
-
-let verticalSplit: Split.Instance;
-let windowSplit: Split.Instance;
-
-const initializeWindowSplit = (
-  editor: HTMLElement,
-  tutorial: HTMLElement,
-  onDrag: () => void
-) => {
-  windowSplit = Split([editor, tutorial], {
-    direction: "horizontal",
-    minSize: 200,
-    sizes: [60, 40],
-    snapOffset: 0,
-    gutterStyle: (a, b) => ({
-      background: "#d9d9da",
-      [a]: `${b}px`
-    }),
-    onDrag
-  });
-};
 
 @Component({
   components: {
     MonacoEditor,
     Tutorial,
     CloseButton
-  },
-  data: function() {
+  }
+})
+export default class Layout extends Vue {
+  private verticalSplit: Split.Instance | undefined;
+  private windowSplit: Split.Instance | undefined;
+
+  private getRefs() {
+    const { navigation, windowContainer, editor, tutorial } = this.$refs;
+    return {
+      navigation: navigation as HTMLElement,
+      windowContainer: windowContainer as HTMLElement,
+      editor: editor as HTMLElement,
+      tutorial: tutorial as HTMLElement
+    };
+  }
+
+  private initializeWindowSplit() {
+    const { editor, tutorial } = this.getRefs();
+
+    this.windowSplit = Split([editor, tutorial], {
+      direction: "horizontal",
+      minSize: 200,
+      sizes: [60, 40],
+      snapOffset: 0,
+      gutterStyle: (a, b) => ({
+        background: "#d9d9da",
+        [a]: `${b}px`
+      }),
+      onDrag: () => {
+        this.$data.editorWidth = editor.clientWidth;
+      }
+    });
+  }
+
+  @Watch("showEditor")
+  @Watch("showTutorial")
+  private onChangeShowWindows() {
+    const { showEditor, showTutorial } = this.$data;
+    const { editor, tutorial } = this.getRefs();
+
+    if (showEditor && showTutorial) {
+      this.initializeWindowSplit();
+    } else {
+      this.windowSplit?.destroy(true, false);
+      editor.style.width = "";
+      tutorial.style.width = "";
+    }
+
+    setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
+  }
+
+  public data() {
     return {
       showEditor: true,
       showTutorial: true,
       editorWidth: 0,
       editorHeight: 0
     };
-  },
-  watch: {
-    showEditor: function() {
-      const { showEditor, showTutorial } = this.$data;
-      const editor = this.$refs.editor as HTMLElement;
-      const tutorial = this.$refs.tutorial as HTMLElement;
-      console.log(verticalSplit, windowSplit, this.$data);
+  }
 
-      if (showEditor && showTutorial) {
-        initializeWindowSplit(editor, tutorial, () => {
-          this.$data.editorWidth = editor.clientWidth;
-        });
-      } else {
-        windowSplit.destroy(true, false);
-        editor.style.width = "";
-        tutorial.style.width = "";
-      }
+  public toggleEditor() {
+    this.$data.showEditor = !this.$data.showEditor;
+  }
 
-      setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
-    },
-    showTutorial: function() {
-      const { showEditor, showTutorial } = this.$data;
-      const editor = this.$refs.editor as HTMLElement;
-      const tutorial = this.$refs.tutorial as HTMLElement;
-      console.log(verticalSplit, windowSplit, this.$data);
+  public toggleTutorial() {
+    this.$data.showTutorial = !this.$data.showTutorial;
+  }
 
-      if (showEditor && showTutorial) {
-        initializeWindowSplit(editor, tutorial, () => {
-          this.$data.editorWidth = editor.clientWidth;
-        });
-      } else {
-        windowSplit.destroy(true, false);
-        editor.style.width = "";
-        tutorial.style.width = "";
-      }
+  public mounted() {
+    const { navigation, windowContainer, editor, tutorial } = this.getRefs();
 
-      setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
-    }
-  },
-  methods: {
-    toggleEditor: function() {
-      this.$data.showEditor = !this.$data.showEditor;
-    },
-    toggleTutorial: function() {
-      this.$data.showTutorial = !this.$data.showTutorial;
-    }
-  },
-  mounted: function() {
-    const navigation = this.$refs.navigation as HTMLElement;
-    const windowContainer = this.$refs.windowContainer as HTMLElement;
-    const editor = this.$refs.editor as HTMLElement;
-    const tutorial = this.$refs.tutorial as HTMLElement;
-
-    verticalSplit = Split([navigation, windowContainer], {
+    this.verticalSplit = Split([navigation, windowContainer], {
       direction: "vertical",
       minSize: [20, 200],
       sizes: [5, 95],
@@ -128,16 +117,14 @@ const initializeWindowSplit = (
       }
     });
 
-    initializeWindowSplit(editor, tutorial, () => {
-      this.$data.editorWidth = editor.clientWidth;
-    });
-  },
-  destroyed: function() {
-    verticalSplit.destroy(true, false);
-    windowSplit.destroy(true, false);
+    this.initializeWindowSplit();
   }
-})
-export default class Layout extends Vue {}
+
+  public destroyed() {
+    this.verticalSplit?.destroy(true, false);
+    this.windowSplit?.destroy(true, false);
+  }
+}
 </script>
 
 <style scoped lang="less">
