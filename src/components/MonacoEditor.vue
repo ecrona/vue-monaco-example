@@ -31,17 +31,6 @@ export default class MonacoEditor extends Vue {
   }
 
   public mounted() {
-    const monacoEditor = this.$refs.monacoEditor as HTMLElement;
-    this.editor = monaco.editor.create(monacoEditor, {
-      value: editorSnippet,
-      language: "typescript",
-      minimap: {
-        enabled: false
-      },
-      automaticLayout: true,
-      theme: "main"
-    });
-
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: true,
       noSyntaxValidation: true
@@ -54,6 +43,18 @@ export default class MonacoEditor extends Vue {
         "editor.background": "#ececec"
       }
     });
+
+    const monacoEditor = this.$refs.monacoEditor as HTMLElement;
+    this.editor = monaco.editor.create(monacoEditor, {
+      value: editorSnippet,
+      language: "typescript",
+      minimap: {
+        enabled: false
+      },
+      automaticLayout: true,
+      theme: "main"
+    });
+
     monacoEditor.addEventListener("drop", this.drop);
     monacoEditor.addEventListener("dragover", e => e.preventDefault());
   }
