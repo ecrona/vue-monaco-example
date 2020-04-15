@@ -66,12 +66,16 @@ const initializeWindowSplit = (
       console.log(verticalSplit, windowSplit, this.$data);
 
       if (showEditor && showTutorial) {
-        initializeWindowSplit(editor, tutorial, () => undefined);
+        initializeWindowSplit(editor, tutorial, () => {
+          this.$data.editorWidth = editor.clientWidth;
+        });
       } else {
         windowSplit.destroy(true, false);
         editor.style.width = "";
         tutorial.style.width = "";
       }
+
+      setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
     },
     showTutorial: function() {
       const { showEditor, showTutorial } = this.$data;
@@ -80,12 +84,16 @@ const initializeWindowSplit = (
       console.log(verticalSplit, windowSplit, this.$data);
 
       if (showEditor && showTutorial) {
-        initializeWindowSplit(editor, tutorial, () => undefined);
+        initializeWindowSplit(editor, tutorial, () => {
+          this.$data.editorWidth = editor.clientWidth;
+        });
       } else {
         windowSplit.destroy(true, false);
         editor.style.width = "";
         tutorial.style.width = "";
       }
+
+      setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
     }
   },
   mounted: function() {
