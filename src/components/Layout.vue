@@ -22,6 +22,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Split from "split.js";
+import { throttle, debounce } from "throttle-debounce";
 import MonacoEditor from "./MonacoEditor.vue";
 import Tutorial from "./Tutorial.vue";
 import CloseButton from "./CloseButton.vue";
@@ -36,6 +37,20 @@ import CloseButton from "./CloseButton.vue";
 export default class Layout extends Vue {
   private verticalSplit: Split.Instance | undefined;
   private windowSplit: Split.Instance | undefined;
+
+  constructor() {
+    super();
+    this.setEditorWidth = throttle(20, this.setEditorWidth);
+    this.setEditorHeight = throttle(20, this.setEditorHeight);
+  }
+
+  private setEditorWidth() {
+    this.$data.editorWidth = this.getRefs().editor.clientWidth;
+  }
+
+  private setEditorHeight() {
+    this.$data.editorHeight = this.getRefs().editor.clientHeight;
+  }
 
   private getRefs() {
     const { navigation, windowContainer, editor, tutorial } = this.$refs;
@@ -59,9 +74,7 @@ export default class Layout extends Vue {
         background: "#d9d9da",
         [a]: `${b}px`
       }),
-      onDrag: () => {
-        this.$data.editorWidth = editor.clientWidth;
-      }
+      onDrag: this.setEditorWidth
     });
   }
 
@@ -83,7 +96,7 @@ export default class Layout extends Vue {
       tutorial.style.width = "";
     }
 
-    setTimeout(() => (this.$data.editorWidth = editor.clientWidth));
+    setTimeout(this.setEditorWidth);
   }
 
   public data() {
@@ -116,7 +129,7 @@ export default class Layout extends Vue {
         background: "#afb0b0",
         [a]: `${b}px`
       }),
-      onDrag: () => (this.$data.editorHeight = editor.clientHeight)
+      onDrag: this.setEditorHeight
     });
 
     this.initializeWindowSplit();
@@ -154,6 +167,7 @@ export default class Layout extends Vue {
 .window-container {
   position: relative;
   display: flex;
+  overflow-y: hidden;
 
   .editor {
     position: relative;
