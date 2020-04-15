@@ -74,7 +74,11 @@ export default class Layout extends Vue {
     if (showEditor && showTutorial) {
       this.initializeWindowSplit();
     } else {
-      this.windowSplit?.destroy(true, false);
+      if (this.windowSplit) {
+        this.windowSplit.destroy(true, false);
+        this.windowSplit = undefined;
+      }
+
       editor.style.width = "";
       tutorial.style.width = "";
     }
@@ -112,9 +116,7 @@ export default class Layout extends Vue {
         background: "#afb0b0",
         [a]: `${b}px`
       }),
-      onDrag: () => {
-        this.$data.editorHeight = editor.clientHeight;
-      }
+      onDrag: () => (this.$data.editorHeight = editor.clientHeight)
     });
 
     this.initializeWindowSplit();
