@@ -1,11 +1,13 @@
 <template>
   <div class="tutorial-wrapper">
-    <button v-on:click="selectAll">select</button>
-    <div class="tutorial" dragable="true">
-      <u class="line-numbers">
-        <li v-for="line in lineNumbers" v-bind:key="line">{{ line }}</li>
-      </u>
-      <div ref="code" class="code">{{ code }}</div>
+    <div class="tutorial-container">
+      <button v-on:click="selectAll">select</button>
+      <div class="tutorial" dragable="true">
+        <u class="line-numbers">
+          <li v-for="line in lineNumbers" v-bind:key="line">{{ line }}</li>
+        </u>
+        <div ref="code" class="code">{{ code }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -47,24 +49,35 @@ export default class MonacoEditor extends Vue {}
 
 <style scoped lang="less">
 .tutorial-wrapper {
-  background: #ececec;
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
 
-  .tutorial {
-    display: flex;
-    font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
+  .tutorial-container {
+    width: 100%;
+    background: #ececec;
+    padding: 8px 16px;
+    margin: 0 16px;
 
-    .line-numbers {
-      list-style-type: none;
-      text-decoration: none;
-      margin-top: 1px;
-      margin-right: 24px;
-      color: #bfc0c0;
-    }
+    .tutorial {
+      display: flex;
+      font-family: "Droid Sans Mono", monospace, monospace,
+        "Droid Sans Fallback";
 
-    .code {
-      white-space: pre;
-      color: #b55f99;
+      .line-numbers {
+        list-style-type: none;
+        text-decoration: none;
+        margin-top: 1px;
+        margin-right: 24px;
+        color: #bfc0c0;
+      }
+
+      .code {
+        white-space: pre;
+        color: #b55f99;
+      }
     }
   }
 }
