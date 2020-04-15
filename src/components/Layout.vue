@@ -179,8 +179,6 @@ export default class Layout extends Vue {
     position: relative;
     width: 100%;
     background: #d9d9da;
-    padding: 10px;
-    padding-left: 0;
   }
 }
 </style>
